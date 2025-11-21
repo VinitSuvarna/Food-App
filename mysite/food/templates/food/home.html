@@ -1,0 +1,38 @@
+{% extends 'food/base.html' %}
+
+{% block body %}
+
+{% for item in item_list %}
+   
+    <div class="row mt-5">
+        <div class="col-md-3 offset-md-2">
+            <img
+                src="{{ item.item_image }}"
+                class="card"
+                height="135px"
+                width="230px"
+            >
+        </div>
+        <div class="col-md-4">
+            <h3 style="font-size:1.5rem">{{ item.item_name }}</h3>
+            <h5 style="font-style:italic; font-size:1rem">{{ item.item_description }}</h5>
+            <h6>{{ item.item_price }}</h6>
+            <h6 style="font-style:italic">restaurant owner: </h6>
+            <h6 style="font-style:italic">admin: </h6>
+        </div>
+        <div class="col-md-3">
+            {% if user.is_authenticated %}
+                <a href="{% url 'food:detail' item.id %}" class="btn btn-success">
+                    Details
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-danger">
+                    Details
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+{% endfor %}
+
+{% endblock %}

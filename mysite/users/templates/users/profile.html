@@ -1,0 +1,14 @@
+{% extends 'food/base.html' %}
+
+{% block body %}
+
+<h1>User Profile:</h1>
+
+<span>{{ user.first_name }}</span>
+<span>{{ user.last_name }}</span>
+<span>{{ user.email }}</span>
+<span>{{ user.profilemodel.location }}</span>
+<img height="200px" width="200px" src="{{ user.profilemodel.image.url }}">
+
+
+{% endblock %}
