@@ -32,27 +32,44 @@
             ${{ item.item_price }}
         </h3>
     </div>
-    <div class="col-md-3 offset-md-1">
+        <div class="col-md-3 offset-md-1">
         {% if user.is_authenticated %}
-            {% if user.profilemodel.user_types == "CUSTOMER" %}
-               
-                <a
-                    href="#"
-                    style="width:80px"
-                    class="btn btn-warning"
+
+            {# CUSTOMER: show Order Now #}
+            {% if user.profilemodel.user_type == "CUSTOMER" %}
+                <form
+                    action="{% url 'food:place_order' item.id %}"
+                    method="post"
+                    class="d-inline"
                 >
-                    Cart
-                </a>
+                    {% csrf_token %}
+                    <input
+                        type="number"
+                        name="quantity"
+                        value="1"
+                        min="1"
+                        class="form-control d-inline"
+                        style="width:80px; display:inline-block; margin-right:8px;"
+                    >
+                    <button
+                        type="submit"
+                        style="width:120px"
+                        class="btn btn-warning"
+                    >
+                        Order Now
+                    </button>
+                </form>
+
                 <a
                     href="{% url 'food:home' %}"
-                    style="width:80px"
+                    style="width:80px; margin-left:8px;"
                     class="btn btn-success"
                 >
                     Back
                 </a>
 
-            {% elif user.profilemodel.user_types == "RESTAURANT" %}
-
+            {# RESTAURANT: edit only #}
+            {% elif user.profilemodel.user_type == "RESTAURANT" %}
                 <a
                     href="{% url 'food:update' item.id %}"
                     style="width:80px"
@@ -68,8 +85,8 @@
                     Back
                 </a>
 
-            {% elif user.profilemodel.user_types == "ADMIN" %}
-               
+            {# ADMIN: edit + delete #}
+            {% elif user.profilemodel.user_type == "ADMIN" %}
                 <a
                     href="{% url 'food:update' item.id %}"
                     style="width:80px"
@@ -91,10 +108,11 @@
                 >
                     Back
                 </a>
-
             {% endif %}
+
         {% endif %}
     </div>
+
 </div>
 
 <!-- red: records -->

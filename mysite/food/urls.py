@@ -57,4 +57,7 @@ urlpatterns = [
     # ---------------------------------------------------------------------------------------------
     path('delete/<int:item_id>/', views.DeleteFoodItemFunctionView, name='delete'),
    
+
+    path('order/<int:item_id>/', views.PlaceOrderFunctionView, name='place_order'),
+    path('order/detail/<int:order_id>/', views.OrderDetailFunctionView, name='order_detail'),
 ]

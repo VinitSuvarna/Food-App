@@ -1,12 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from food.models import FoodItemsModel
-from food.forms import FoodItemsForm
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView
 from django.urls import reverse_lazy
-from food.models import LogHistoryModel
+from django.contrib.auth.decorators import login_required
+
+from food.models import FoodItemsModel, LogHistoryModel, Order
+from food.forms import FoodItemsForm
+
 
 # Create your views here.
 # --------------------------------------------------------------------------------------------- 
@@ -174,4 +176,57 @@ def DeleteFoodItemFunctionView(request, item_id):
 
     return render(request, "food/item-delete.html", context)
 
- 
+ # place order view
+# ---------------------------------------------------------------------------------------------
+@login_required
+def PlaceOrderFunctionView(request, item_id):
+    item = get_object_or_404(FoodItemsModel, id=item_id)
+
+    if request.method == "POST":
+        # get quantity from form
+        try:
+            quantity = int(request.POST.get("quantity", 1))
+        except (TypeError, ValueError):
+            quantity = 1
+        if quantity < 1:
+            quantity = 1
+
+        # create order with PENDING status
+        order = Order.objects.create(
+            customer=request.user,
+            item=item,
+            quantity=quantity,
+            price_at_order=item.item_price,
+            status='PENDING',
+        )
+
+        # later we'll send this to PayPal
+        return redirect('food:order_detail', order_id=order.id)
+
+    # GET request: simple confirm page
+    context = {
+        'item': item
+    }
+    return render(request, "food/order_confirm.html", context)
+
+
+# order detail view
+# ---------------------------------------------------------------------------------------------
+@login_required
+def OrderDetailFunctionView(request, order_id):
+    user = request.user
+
+    # Admins / superusers can view any order
+    if user.is_superuser or getattr(user, 'profilemodel', None) and getattr(user.profilemodel, 'user_type', '') == 'ADMIN':
+        order = get_object_or_404(Order, id=order_id)
+    else:
+        # Normal customers can view only their own orders
+        order = get_object_or_404(Order, id=order_id, customer=user)
+
+    # mark as paid if ?paid=1
+    if request.GET.get('paid') == '1' and order.status != 'PAID':
+        order.status = 'PAID'
+        order.save()
+
+    context = {'order': order}
+    return render(request, "food/order_detail.html", context)

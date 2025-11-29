@@ -11,7 +11,7 @@ class FoodItemsModel(models.Model):
         on_delete=models.CASCADE,
         default=1
     )
-    admin = models.CharField(null=True,max_length=50)
+    admin = models.CharField(null=True, max_length=50)
     item_name = models.CharField(max_length=100)
     item_description = models.CharField(
         max_length=500,
@@ -25,7 +25,9 @@ class FoodItemsModel(models.Model):
 
     def __str__(self):
         return str((self.item_name, self.item_price))
-    # log history model
+
+
+# log history model
 # ----------------------------------------------------------------------------------------------
 
 class LogHistoryModel(models.Model):
@@ -33,7 +35,7 @@ class LogHistoryModel(models.Model):
     log_prod_code = models.IntegerField(default=100)
     log_item_name = models.CharField(max_length=100)
     log_operation_type = models.CharField(max_length=50)
-   
+
     def __str__(self):
         return str(
             (
@@ -43,3 +45,42 @@ class LogHistoryModel(models.Model):
                 self.log_operation_type,
             )
         )
+
+
+# orders model (for "Order Now" + payment later)
+# ----------------------------------------------------------------------------------------------
+
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending'),
+        ('PAID', 'Paid'),
+        ('CANCELLED', 'Cancelled'),
+    ]
+
+    customer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='orders'
+    )
+    item = models.ForeignKey(
+        FoodItemsModel,
+        on_delete=models.CASCADE,
+        related_name='orders'
+    )
+    quantity = models.PositiveIntegerField(default=1)
+    # store price at the time of order so if you change item_price later,
+    # old orders keep their original price
+    price_at_order = models.IntegerField()
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='PENDING'
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order #{self.id} - {self.item.item_name} x {self.quantity}"
+
+    @property
+    def total_price(self):
+        return self.quantity * self.price_at_order

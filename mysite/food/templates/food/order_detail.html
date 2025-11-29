@@ -1,0 +1,71 @@
+{% extends 'food/base.html' %}
+
+{% block body %}
+
+<div class="container mt-5">
+
+    <h2>Order #{{ order.id }}</h2>
+
+    <p><strong>Item:</strong> {{ order.item.item_name }}</p>
+    <p><strong>Quantity:</strong> {{ order.quantity }}</p>
+    <p><strong>Price per item:</strong> ${{ order.price_at_order }}</p>
+    <p><strong>Total:</strong> ${{ order.total_price }}</p>
+    <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+
+    <a href="{% url 'food:home' %}" class="btn btn-success mt-3">Back to Home</a>
+
+</div>
+
+<hr>
+
+<h3 class="mt-4 mb-3">Pay with PayPal</h3>
+
+<!-- Container where PayPal button will be rendered -->
+<div id="paypal-button-container"></div>
+
+{# PayPal JavaScript SDK with YOUR client ID + currency from Django settings #}
+<script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency={{ paypal_currency }}"></script>
+
+<script>
+    console.log("PayPal object:", typeof paypal);
+
+    // Ensure total price is treated as a number with 2 decimal places
+    const orderTotal = "{{ order.total_price|floatformat:2 }}";
+
+    paypal.Buttons({
+
+        // Create the order on PayPal
+        createOrder: function (data, actions) {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value: orderTotal
+                    },
+                    description: "Food Order #{{ order.id }}"
+                }]
+            });
+        },
+
+        // Capture the order after approval
+        onApprove: function (data, actions) {
+            return actions.order.capture().then(function (details) {
+                alert("Transaction completed by " + details.payer.name.given_name);
+
+                // Option 1: quick & simple (what you're doing now)
+                window.location.href = "{% url 'food:order_detail' order.id %}?paid=1";
+
+                // Option 2 (better): redirect to a dedicated success URL
+                // window.location.href = "{% url 'food:payment_success' order.id %}";
+            });
+        },
+
+        // Handle errors
+        onError: function (err) {
+            console.error("PayPal error:", err);
+            alert("Something went wrong with the PayPal payment.");
+        }
+
+    }).render("#paypal-button-container");
+</script>
+
+{% endblock %}

@@ -16,17 +16,37 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# ---------------------------------------------------------
+# Secret key
+# ---------------------------------------------------------
+
+# For local development we fall back to a dummy key.
+# In production you MUST set DJANGO_SECRET_KEY in env vars.
+SECRET_KEY = os.getenv(
+    "DJANGO_SECRET_KEY",
+    "dev-secret-key-change-this-in-production"
+)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-deo4fr@)o*9u)y42q1e-s%jo93s8v*l$x7lt+td8un8r*0sx+#'
+#SECRET_KEY = os.getenv("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = []
+if DEBUG:
+    ALLOWED_HOSTS = ["127.0.0.1", "localhost"]
+    CSRF_TRUSTED_ORIGINS = []
+else:
+    hosts = os.getenv("ALLOWED_HOSTS", "")
+    ALLOWED_HOSTS = [h.strip() for h in hosts.split(",") if h.strip()]
+    CSRF_TRUSTED_ORIGINS = [
+        f"https://{h}" for h in ALLOWED_HOSTS if h
+    ]
+    
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 
 # Application definition
@@ -44,6 +64,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -119,6 +140,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 LOGIN_URL = 'login'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'pictures')
@@ -129,3 +152,6 @@ MEDIA_URL = 'pic/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CSRF_TRUSTED_ORIGINS = [
+    "https://your-service-name.onrender.com",
+]
