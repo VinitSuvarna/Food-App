@@ -5,4 +5,12 @@ packaging==25.0
 pillow==11.3.0
 sqlparse==0.5.3
 tzdata==2025.2
-whitenoise==6.11.0
+
+# Required for Render static file serving
+whitenoise==6.6.0
+
+# Required if connecting to PostgreSQL on Render
+psycopg2-binary==2.9.9
+
+# Optional but recommended
+django-environ==0.11.2
