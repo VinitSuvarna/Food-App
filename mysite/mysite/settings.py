@@ -26,7 +26,7 @@ SECRET_KEY = os.getenv(
 # We’ll treat this as production (Render)
 # If you want to run locally with debug, you can override
 # this with DEBUG=True in your local environment.
-DEBUG = False
+DEBUG = os.getenv("DEBUG", "False") == "True"
 
 # Allow your Render domain AND localhost (for testing)
 ALLOWED_HOSTS = [
