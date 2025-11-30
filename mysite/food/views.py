@@ -235,3 +235,11 @@ def OrderDetailFunctionView(request, order_id):
         'paypal_currency': settings.PAYPAL_CURRENCY,
     }
     return render(request, "food/order_detail.html", context)
+
+
+def PaymentSuccessFunctionView(request):
+    """
+    Simple page shown after a successful payment / order.
+    You can pass order info in context later if you want.
+    """
+    return render(request, "food/order_confirm.html")
