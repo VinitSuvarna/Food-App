@@ -23,26 +23,25 @@ SECRET_KEY = os.getenv(
 # Debug & Hosts
 # ---------------------------------------------------------
 
-# We’ll treat this as production (Render)
-# If you want to run locally with debug, you can override
-# this with DEBUG=True in your local environment.
-DEBUG = os.getenv("DEBUG", "False") == "True"
+# Use env var so you can have DEBUG=True locally and False on Render
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-# Allow your Render domain AND localhost (for testing)
 ALLOWED_HOSTS = [
-    "food-app-wi5a.onrender.com",
-    "127.0.0.1",
-    "localhost",
+    "food-app-wi5a.onrender.com",  # Render domain
+    "127.0.0.1",                   # local dev
+    "localhost",                   # local dev
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://food-app-wi5a.onrender.com",
 ]
 
+# Whitenoise for static files in production
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-
+# ---------------------------------------------------------
 # Application definition
+# ---------------------------------------------------------
 
 INSTALLED_APPS = [
     "food",
@@ -85,7 +84,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "mysite.wsgi.application"
 
-
+# ---------------------------------------------------------
 # Database
 # ---------------------------------------------------------
 
@@ -96,7 +95,7 @@ DATABASES = {
     }
 }
 
-
+# ---------------------------------------------------------
 # Password validation
 # ---------------------------------------------------------
 
@@ -115,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
+# ---------------------------------------------------------
 # Internationalization
 # ---------------------------------------------------------
 
@@ -124,19 +123,38 @@ TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-
-# Static files
+# ---------------------------------------------------------
+# Static & Media files
 # ---------------------------------------------------------
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+MEDIA_ROOT = BASE_DIR / "pictures"
+MEDIA_URL = "/pic/"
 
 LOGIN_URL = "login"
 
-MEDIA_ROOT = os.path.join(BASE_DIR, "pictures")
-MEDIA_URL = "pic/"
-
+# ---------------------------------------------------------
 # Default primary key field type
 # ---------------------------------------------------------
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ---------------------------------------------------------
+# Logging (so errors show in Render logs)
+# ---------------------------------------------------------
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}
