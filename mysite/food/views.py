@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.views.generic.list import ListView
@@ -228,12 +229,9 @@ def OrderDetailFunctionView(request, order_id):
         order.status = 'PAID'
         order.save()
 
-    context = {'order': order}
+    context = {
+        'order': order,
+        'paypal_client_id': settings.PAYPAL_CLIENT_ID,
+        'paypal_currency': settings.PAYPAL_CURRENCY,
+    }
     return render(request, "food/order_detail.html", context)
-
-def PaymentSuccessFunctionView(request):
-    """
-    Simple page shown after a successful payment / order.
-    You can pass order info in context later if you want.
-    """
-    return render(request, "food/order_confirm.html")

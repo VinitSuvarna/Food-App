@@ -158,3 +158,7 @@ LOGGING = {
         "level": "DEBUG",
     },
 }
+
+# PayPal configuration
+PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
+PAYPAL_CURRENCY = os.getenv("PAYPAL_CURRENCY", "USD")
