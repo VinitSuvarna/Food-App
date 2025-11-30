@@ -51,11 +51,11 @@
             return actions.order.capture().then(function (details) {
                 alert("Transaction completed by " + details.payer.name.given_name);
 
-                // Option 1: quick & simple (what you're doing now)
+                // ✅ Option 1: what you are using now (handled by OrderDetailFunctionView)
                 window.location.href = "{% url 'food:order_detail' order.id %}?paid=1";
 
-                // Option 2 (better): redirect to a dedicated success URL
-                // window.location.href = "{% url 'food:payment_success' order.id %}";
+                // ✅ Option 2: use a simple success page (only if you don't need order_id)
+                // window.location.href = "{% url 'food:payment_success' %}";
             });
         },
 

@@ -8,22 +8,19 @@ urlpatterns = [
     # http://localhost:8000/food/home/
     # function based home view
     # ---------------------------------------------------------------------------------------------
-     path('home/', views.HomeFunctionView, name='home'),
-   
+    path('home/', views.HomeFunctionView, name='home'),
    
    
     # http://localhost:8000/food/home/
     # class based home view
     # ---------------------------------------------------------------------------------------------
-    #path('home/', views.HomeClassView.as_view(), name='home'),
-   
+    # path('home/', views.HomeClassView.as_view(), name='home'),
    
    
     # http://localhost:8000/food/detail/1/
     # function based detail view
     # ---------------------------------------------------------------------------------------------
-     path('detail/<int:item_id>/', views.DetailFunctionView, name='detail'),
-   
+    path('detail/<int:item_id>/', views.DetailFunctionView, name='detail'),
    
    
     # http://localhost:8000/food/detail/1/
@@ -32,12 +29,10 @@ urlpatterns = [
     # path('detail/<int:pk>/', views.DetailClassView.as_view(), name='detail'),
    
    
-   
     # http://localhost:8000/food/add/
     # function based create item view
     # ---------------------------------------------------------------------------------------------
     # path('add/', views.CreateFoodItemFunctionView, name='add'),
-   
    
    
     # http://localhost:8000/food/add/
@@ -46,11 +41,9 @@ urlpatterns = [
     path('add/', views.CreateFoodItemClassView.as_view(), name='add'),
    
    
-   
     # http://localhost:8000/food/update/
     # ---------------------------------------------------------------------------------------------
     path('update/<int:item_id>/', views.UpdateFoodItemFunctionView, name='update'),
-   
    
    
     # http://localhost:8000/food/delete/
@@ -58,6 +51,16 @@ urlpatterns = [
     path('delete/<int:item_id>/', views.DeleteFoodItemFunctionView, name='delete'),
    
 
+    # place order
+    # ---------------------------------------------------------------------------------------------
     path('order/<int:item_id>/', views.PlaceOrderFunctionView, name='place_order'),
+
+    # order detail page
+    # ---------------------------------------------------------------------------------------------
     path('order/detail/<int:order_id>/', views.OrderDetailFunctionView, name='order_detail'),
+
+    # payment success page (fix for NoReverseMatch)
+    # ---------------------------------------------------------------------------------------------
+    path('order/payment/success/', views.PaymentSuccessFunctionView, name='payment_success'),
+    
 ]
